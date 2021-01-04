@@ -1,13 +1,30 @@
-import { AppBar, Box, Button, Drawer, makeStyles, Tabs, Toolbar, Typography, Switch, IconButton } from '@material-ui/core';
+import { AppBar, Box, Button, Drawer, makeStyles, Toolbar, Typography, Switch, IconButton } from '@material-ui/core';
 import React, { createContext, useState } from 'react'
 import CloseIcon from '@material-ui/icons/Close';
-import App from '../App';
 import JoinForm from './JoinForm';
 import SignInForm from './SignInForm';
+import HomePage from './HomePage';
+import Overview from './Overview';
+
+export const UserDataContext = createContext(null);
 
 export default function Dashbord() {
-    const UserDataContext = createContext(null);
-    const [userData, setUserData] = useState();
+    const [userData, setUserData] = useState({
+        Firstname : 'Oded',
+        Lastname : 'Vaalany',
+        Email : 'avoded2@gmail.com',
+        Password : 'avoded2@gmail.com',
+        Gender : 'male',
+        Phonenumber : '0546862210',
+        Birthday : Date.now(),
+        perHour : 35,
+        Reports : [
+            {date : Date.now(), start : null , end : null , perHour : 35},
+            {date : (Date.now()-1000*60*60*24), start : null , end : null , perHour : 35},
+            {date : (Date.now()-1000*60*60*24*10), start : null , end : null , perHour : 35},
+            {date : Date.now(), start : null , end : null , perHour : 35},
+        ]
+    });
     //need to build the reload function for the data
 
     const classes = style();
@@ -16,20 +33,17 @@ export default function Dashbord() {
     const ToggleConnections = () => {
         setCS(!CS);
     }
+    
+    const LogOut = () =>{
+        setUserData(null);
+        //קריאת ניתוק לשרת
+    }
+
     return (
         <React.Fragment>
-            <UserDataContext.Provider value={null}>
-                <AppBar color='primary' variant='elevation' className={classes.AppBar}>
-                    <Toolbar className={classes.Toolbar}>
-                        <Typography variant='h1' className={classes.Title}>WorkClock</Typography>
-                        <Box className={classes.Box}>
-                            <Button variant='contained' color='secondary' className={classes.HeaderButton} onClick={() => setOpenConnections(true)}>Join</Button>
-                            <Button variant='outlined' color='secondary' className={classes.HeaderButton}>Log In</Button>
-                        </Box>
-                    </Toolbar>
-                </AppBar>
-                <Drawer open={openConnections} onClose={() => setOpenConnections(false)} anchor='right' className={classes.Drawer}>
-                    <Box className={classes.DrawerBox}> 
+            <UserDataContext.Provider value={userData}>
+                <Drawer open={openConnections} onClose={() => setOpenConnections(false)} anchor='right' className={classes.Drawer} ref={React.createRef()}>
+                    <Box className={classes.DrawerBox} > 
                         <IconButton className={classes.ExitIcons} onClick={() => setOpenConnections(false)}><CloseIcon/></IconButton>
                         {CS ? <JoinForm/> : <SignInForm/>}
                         <Box className={classes.ToggleBox}>
@@ -39,6 +53,26 @@ export default function Dashbord() {
                         </Box>
                     </Box>
                 </Drawer>
+
+                <AppBar color='primary' variant='elevation' className={classes.AppBar}>
+                    <Toolbar className={classes.Toolbar}>
+                        <Typography variant='h1' className={classes.Title}>WorkClock</Typography>
+                        {
+                            userData === null ? 
+                        (<Box className={classes.Box}>
+                            <Button variant='contained' color='secondary' className={classes.HeaderButton} onClick={() => {setOpenConnections(true);setCS(true);}}>Join</Button>
+                            <Button variant='outlined' color='secondary' className={classes.HeaderButton} onClick={() => {setOpenConnections(true);setCS(false);}}>Log In</Button>
+                        </Box>)
+                        :
+                        (<Box className={classes.Box}>
+                             <Button variant='outlined' color='secondary' className={classes.HeaderButton} onClick={LogOut}>Log Out</Button>
+                        </Box>)
+                        }
+                    </Toolbar>
+                </AppBar>
+
+                {userData === null ? <HomePage/> : <Overview/>}
+                
             </UserDataContext.Provider>
         </React.Fragment>
     )

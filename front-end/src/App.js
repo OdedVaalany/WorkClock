@@ -1,8 +1,7 @@
-import logo from './logo.svg';
+
 import React from 'react'
-import {createMuiTheme, makeStyles, ThemeProvider } from '@material-ui/core/styles'
-import { amber, purple } from '@material-ui/core/colors';
-import { Typography } from '@material-ui/core';
+import {createMuiTheme, ThemeProvider } from '@material-ui/core/styles'
+import { purple } from '@material-ui/core/colors';
 import Dashbord from './Components/Dashbord';
 
 function App() {
@@ -36,4 +35,14 @@ const theme = createMuiTheme({
       fontWeight : 'bolder',
     }
   },
+
+  overrides : {
+    MuiButton : {
+      root : {
+        '@media (max-width:600px)' : {
+          fontSize : '8pt'
+        }
+      }
+    }
+  }
 });
