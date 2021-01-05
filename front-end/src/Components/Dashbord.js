@@ -1,10 +1,11 @@
-import { AppBar, Box, Button, Drawer, makeStyles, Toolbar, Typography, Switch, IconButton } from '@material-ui/core';
-import React, { createContext, useState } from 'react'
+import { AppBar, Box, Button, Drawer, makeStyles, Toolbar, Typography, Switch, IconButton, Avatar, TextField } from '@material-ui/core';
+import React, { createContext, useContext, useState } from 'react'
 import CloseIcon from '@material-ui/icons/Close';
 import JoinForm from './JoinForm';
 import SignInForm from './SignInForm';
 import HomePage from './HomePage';
 import Overview from './Overview';
+import { purple } from '@material-ui/core/colors';
 
 export const UserDataContext = createContext(null);
 
@@ -19,16 +20,17 @@ export default function Dashbord() {
         Birthday : Date.now(),
         perHour : 35,
         Reports : [
-            {date : Date.now(), start : null , end : null , perHour : 35},
-            {date : (Date.now()-1000*60*60*24), start : null , end : null , perHour : 35},
-            {date : (Date.now()-1000*60*60*24*10), start : null , end : null , perHour : 35},
-            {date : Date.now(), start : null , end : null , perHour : 35},
+            {date : Date.now(), start : '01:00' , end : '08:00' , perHour : 35,totalPay : 250,break : '00:00'},
+            {date : (Date.now()-1000*60*60*24), start : '20:00' , end : '04:00', perHour : 35,totalPay : 250,break : '00:00'},
+            {date : (Date.now()-1000*60*60*24*10), start : '00:00' , end : '08:00', perHour : 35,totalPay : 250,break : '00:00'},
+            {date : Date.now(), start : '09:00' , end : '17:34', perHour : 35,totalPay : 250,break : '00:00'},
         ]
     });
     //need to build the reload function for the data
 
     const classes = style();
     const [openConnections, setOpenConnections,] = useState(false);
+    const [OpenAccountSetting, setOpenAccountSetting] = useState(false)
     const [CS, setCS,] = useState(false);
     const ToggleConnections = () => {
         setCS(!CS);
@@ -54,6 +56,18 @@ export default function Dashbord() {
                     </Box>
                 </Drawer>
 
+                <Drawer open={OpenAccountSetting} onClose={() => setOpenAccountSetting(false)} anchor='right' className={classes.Drawer} ref={React.createRef()}>
+                    <Box className={classes.DrawerBox} > 
+                        <IconButton className={classes.ExitIcons} onClick={() => setOpenAccountSetting(false)}><CloseIcon/></IconButton>
+                        <AccountSetting />
+                        <Box className={classes.LogOutBox}>
+                            <Button variant='contained' color='primary' fullWidth className={classes.HeaderButton} onClick={LogOut}>Log Out</Button>
+                        </Box>
+                    </Box>
+                </Drawer>
+
+                
+
                 <AppBar color='primary' variant='elevation' className={classes.AppBar}>
                     <Toolbar className={classes.Toolbar}>
                         <Typography variant='h1' className={classes.Title}>WorkClock</Typography>
@@ -65,7 +79,7 @@ export default function Dashbord() {
                         </Box>)
                         :
                         (<Box className={classes.Box}>
-                             <Button variant='outlined' color='secondary' className={classes.HeaderButton} onClick={LogOut}>Log Out</Button>
+                             <Button variant='outlined' color='secondary' className={classes.HeaderButton} onClick={() => (setOpenAccountSetting(true))}>Account</Button>
                         </Box>)
                         }
                     </Toolbar>
@@ -75,6 +89,17 @@ export default function Dashbord() {
                 
             </UserDataContext.Provider>
         </React.Fragment>
+    )
+}
+
+function AccountSetting(){
+    const classes = style();
+    const context = useContext(UserDataContext);
+    const [Mode, setMode] = useState('ReadOnly');
+    return(
+        <Box className={classes.AccountBox}>
+            <Typography variant='body1'>hello {context.Firstname + ' ' + context.Lastname}</Typography>
+        </Box>
     )
 }
 
@@ -119,6 +144,19 @@ const style = makeStyles((theme) =>({
         position : 'absolute',
         top : '5px',
         left : '5px'
+    },
+
+    LogOutBox : {
+        position : 'absolute',
+        bottom : '5px',
+        width : '90%',
+    }, 
+    AccountBox : {
+        width : '90%',
+        display : 'flex',
+        justifyContent : 'space-between',
+        alignItems : 'center',
+        flexDirection : 'column'
     }
 
 }));
